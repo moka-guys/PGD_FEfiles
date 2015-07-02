@@ -13,18 +13,25 @@ class Merge_FEfile():
     File$ and File$_Dye specifies which samples (dye) you would like to combine
     This program creates a new FE file from these two samples. 
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction 
-    The output file is names file1_file2.txt'''
+    The output file is names file1_file1dye_file2_file2dye.txt'''
     
     #specify the input files
-    chosenfolder="F:\\fefiles\\"#USB
+    chosenfolder="F:\\PGD_FE\\"#USB
 
     #name output file
-    outputfolder="F:\\fefiles\\"#USB
+    outputfolder="F:\\PGD_FE_OUTPUT\\"#USB
     
     # create dictionaries for features
     file1_dict={}
     file2_dict={}
 
+    #some lists that are populated below 
+    array1=[] # holds chrom, start and log ratio from non control probes
+    sortedarray=[] # array1 but sorted on genomic location
+    log_dict={} # a dictionary with key = chrom, value = a list of log ratios for that chrom 
+    all_derivatives=[] # a list of all the calculated derivatives
+    filtered_derivatives=[] # derivatives in the middle quartile
+    
     def get_sys_argvs(self,file1_in,dye1_in,file2_in,dye2_in):
         '''capture the arguments'''
         # name global variables
@@ -50,9 +57,9 @@ class Merge_FEfile():
         file1_open=open(self.chosenfolder+file1,'r')
         file2_open=open(self.chosenfolder+file2,'r')
         
-        # create and open output file
-        outputfilename=file1+"_"+file2
-        tempoutputfilename="temp.txt"
+        # create and open output file (remove .txt extension from filenames)
+        outputfilename=file1.replace(".txt", '')+"_"+file1_dye+"_"+file2.replace(".txt", '')+"_"+file2_dye+".txt"
+        tempoutputfilename=outputfilename.replace(".txt", '')+"temp.txt"
         tempoutputfile=open(self.outputfolder+tempoutputfilename,'w')
         
         # open the first file and write first 10 lines (stats, feparams) to the output file.
@@ -148,12 +155,7 @@ class Merge_FEfile():
         #close temp file now it's written
         tempoutputfile.close()
     
-    #some lists that are populated below 
-    array1=[] # holds chrom, start and log ratio from non control probes
-    sortedarray=[] # array1 but sorted on genomic location
-    log_dict={} # a dictionary with key = chrom, value = a list of log ratios for that chrom 
-    all_derivatives=[] # a list of all the calc ulated derivatives
-    filtered_derivatives=[] # derivatives in the middle quartile
+
     
     def calculate_DLRS(self):
         '''To calculate the DLRS the newly created temp file is read.
@@ -235,9 +237,11 @@ class Merge_FEfile():
         #print "len of all_derivatives: "+str(len(self.all_derivatives))
         #print "len of filtered SD: "+str(len(self.filtered_derivatives))
         
+        
+        
         #calculate the DLSR by calculating the SD of this list    
         DLSR=numpy.std(self.filtered_derivatives)
-        print "DLSR = "+str(DLSR)
+        #print "DLSR = "+str(DLSR)
          
         #open the final output file
         finaloutput=open(self.outputfolder+outputfilename,'w')
@@ -265,14 +269,38 @@ class Merge_FEfile():
         
         os.remove(self.outputfolder+tempoutputfilename)
         
-file1="PGD_testfile1.txt"
-file2=file1
-file1_dye="cy3"
-file2_dye="cy5"
-#Merge_FEfile().get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
-Merge_FEfile().get_sys_argvs(file1,file1_dye,file2,file2_dye)
-Merge_FEfile().create_dicts()
-Merge_FEfile().rewrite_file()
-Merge_FEfile().calculate_DLRS()
+        # clear all varaiables
+        self.file1_dict.clear()
+        self.file2_dict.clear()
+        del self.filtered_derivatives[:]
+        del self.array1[:]
+        del self.sortedarray[:]
+        self.log_dict.clear() 
+        del self.all_derivatives[:]
+        del self.filtered_derivatives[:]
+        
+
+array1="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_1.txt"
+array2="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_2.txt"
+array3="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_3.txt"
+array4="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_4.txt"
+array5="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_1.txt"
+array6="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_2.txt"
+array7="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_3.txt"
+array8="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_4.txt"
+
+mylist=[(array1,'cy3',array5,'cy3'),(array1,'cy3',array5,'cy5'),(array1,'cy5',array5,'cy3'),(array1,'cy5',array5,'cy5'),(array2,'cy3',array5,'cy3'),(array2,'cy3',array5,'cy5'),(array2,'cy5',array5,'cy3'),(array2,'cy5',array5,'cy5'),(array3,'cy3',array5,'cy3'),(array3,'cy3',array5,'cy5'),(array3,'cy5',array5,'cy3'),(array3,'cy5',array5,'cy5'),(array4,'cy3',array5,'cy3'),(array4,'cy3',array5,'cy5'),(array4,'cy5',array5,'cy3'),(array4,'cy5',array5,'cy5'),(array6,'cy3',array7,'cy3'),(array6,'cy3',array7,'cy5'),(array6,'cy3',array8,'cy3'),(array6,'cy3',array8,'cy5'),(array6,'cy5',array7,'cy3'),(array6,'cy5',array7,'cy5'),(array6,'cy5',array8,'cy3'),(array6,'cy5',array8,'cy5'),(array7,'cy3',array8,'cy3'),(array7,'cy3',array8,'cy5'),(array7,'cy5',array8,'cy3'),(array7,'cy5',array8,'cy5')]
+         
+         
+for i in mylist:       
+    file1=i[2]
+    file2=i[0]
+    file1_dye=i[3]
+    file2_dye=i[1]
+    #Merge_FEfile().get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+    Merge_FEfile().get_sys_argvs(file1,file1_dye,file2,file2_dye)
+    Merge_FEfile().create_dicts()
+    Merge_FEfile().rewrite_file()
+    Merge_FEfile().calculate_DLRS()
 
 
