@@ -289,9 +289,11 @@ array6="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_2.txt"
 array7="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_3.txt"
 array8="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_4.txt"
 
+# this list may be specific to a single array slide. array 5 had a promega male v promega female. each sample on array 1-4 was compared to each of these = 16 files.
+#Then each sample on arrays 6-8 were paired together (12 new files).   
 mylist=[(array1,'cy3',array5,'cy3'),(array1,'cy3',array5,'cy5'),(array1,'cy5',array5,'cy3'),(array1,'cy5',array5,'cy5'),(array2,'cy3',array5,'cy3'),(array2,'cy3',array5,'cy5'),(array2,'cy5',array5,'cy3'),(array2,'cy5',array5,'cy5'),(array3,'cy3',array5,'cy3'),(array3,'cy3',array5,'cy5'),(array3,'cy5',array5,'cy3'),(array3,'cy5',array5,'cy5'),(array4,'cy3',array5,'cy3'),(array4,'cy3',array5,'cy5'),(array4,'cy5',array5,'cy3'),(array4,'cy5',array5,'cy5'),(array6,'cy3',array7,'cy3'),(array6,'cy3',array7,'cy5'),(array6,'cy3',array8,'cy3'),(array6,'cy3',array8,'cy5'),(array6,'cy5',array7,'cy3'),(array6,'cy5',array7,'cy5'),(array6,'cy5',array8,'cy3'),(array6,'cy5',array8,'cy5'),(array7,'cy3',array8,'cy3'),(array7,'cy3',array8,'cy5'),(array7,'cy5',array8,'cy3'),(array7,'cy5',array8,'cy5')]
          
-         
+#promega is to be put as cy3 but in above list is the second file so this is reversed when assigning file 1 and 2. 
 for i in mylist:       
     file1=i[2]
     file2=i[0]
@@ -303,4 +305,4 @@ for i in mylist:
     Merge_FEfile().rewrite_file()
     Merge_FEfile().calculate_DLRS()
 
-
+print "all done"
