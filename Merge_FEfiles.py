@@ -106,7 +106,7 @@ class Merge_FEfile():
                   
                 #concatenate all the columns as required depending on the dyes selected. NB use of same f1 and f2 columns as the dyes are the same! 
                 to_write=f1[0]+t+f1[1]+t+f1[2]+t+f1[3]+t+f1[4]+t+f1[5]+t+f1[6]+t+f1[7]+t+f1[8]+t+f1[9]+t+str(logratio)+t+logratioerr+t+pval+t+f1[13]+t+f2[13]+t+f1[15]+t+f2[15]+t+f1[17]+t+f2[17]+t+f1[19]+t+f2[19]+t+f1[21]+t+f2[21]+t+f1[23]+t+f2[23]+t+f1[25]+t+f2[25]+t+f1[27]+t+f2[27]+t+f1[29]+t+f2[29]+t+f1[31]+t+f2[31]+t+f1[33]+t+f1[34]+t+f2[34]+t+f1[36]+t+f2[36]+t+f1[38]+t+f2[38]+t+f1[40]+t+f1[41]+t+f2[41]+"\n"
-                  
+                 
                 #write this to the temporary output file
                 self.tempoutputfile.write(to_write)       
           
@@ -177,7 +177,6 @@ class Merge_FEfile():
                 splitline=line.split('\t')
                 # remove all control probes and check that there are the correct number of columns
                 if int(splitline[5])==0 and len(splitline)==43:
-                      
                     #split the genomic location into three new fields
                     genloc=splitline[7]
                     genloc=genloc.replace('chr','')
@@ -194,15 +193,15 @@ class Merge_FEfile():
                       
                     #append to an array (chrom, start and logratio score)
                     self.array1.append((splitline[8],splitline[9],splitline[13]))
-                  
-                else:
-                    if int(splitline[5])==0:
-                        #print any NON-control probes that do not have correct length
-                        print "error in line "+ splitline
+                
+                elif int(splitline[5])==0 and len(splitline)!=43:
+                    raise ValueError ("temp file feature length !=43")
+                
             else:
                 pass        
         outputfile2.close()
-                  
+        
+
         #sort the arrays so probes are in genomic order    
         self.sortedarray=sorted(self.array1,key=lambda tup: tup[1])
         self.sortedarray=sorted(self.sortedarray,key=lambda tup: tup[0])
@@ -216,7 +215,7 @@ class Merge_FEfile():
                     #print k
                     list.append(k[2]) 
             self.log_dict[i]=list
-          
+        
         # self.log_dict is {(chrom: 'probe1 log score','probe 2 log score'...).(chrom2:'probe1 log score;,...)}
           
         # for each chromosome (i is the key (chrom))
@@ -231,6 +230,7 @@ class Merge_FEfile():
                     n=float(self.log_dict[i][j])-float(self.log_dict[i][j-1])
                     self.all_derivatives.append(n)
           
+        
         #use numpy to get the 25 and 75 percentile
         q75,q25=numpy.percentile(self.all_derivatives,[75,25])
         for i in self.all_derivatives:
@@ -257,7 +257,7 @@ class Merge_FEfile():
             #except for line 7 which needs the DLSR updating
             elif i ==6:
                 splitline=line.split('\t')
-                splitline[166]=DLSR_sqrt
+                splitline[166]=str(DLSR_sqrt)
                 to_add='\t'.join(splitline)
                 finaloutput.write(to_add)
         #print "file created"
@@ -280,7 +280,7 @@ class Merge_FEfile():
          
 
 array1="column_test1.txt"
-array2="column_test2.txt"
+array2="column_test1.txt"
 # array3="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_3.txt"
 # array4="256755910289_S01_Guys121919_CGH_1100_Jul11_2_1_4.txt"
 # array5="256755910289_S01_Guys121919_CGH_1100_Jul11_2_2_1.txt"
@@ -292,7 +292,8 @@ array2="column_test2.txt"
 # this list may be specific to a single array slide. array 5 had a promega male v promega female. each sample on array 1-4 was compared to each of these = 16 files.
 #Then each sample on arrays 6-8 were paired together (12 new files).   
 #mylist=[(array1,'cy3',array5,'cy3'),(array1,'cy3',array5,'cy5'),(array1,'cy5',array5,'cy3'),(array1,'cy5',array5,'cy5'),(array2,'cy3',array5,'cy3'),(array2,'cy3',array5,'cy5'),(array2,'cy5',array5,'cy3'),(array2,'cy5',array5,'cy5'),(array3,'cy3',array5,'cy3'),(array3,'cy3',array5,'cy5'),(array3,'cy5',array5,'cy3'),(array3,'cy5',array5,'cy5'),(array4,'cy3',array5,'cy3'),(array4,'cy3',array5,'cy5'),(array4,'cy5',array5,'cy3'),(array4,'cy5',array5,'cy5'),(array6,'cy3',array7,'cy3'),(array6,'cy3',array7,'cy5'),(array6,'cy3',array8,'cy3'),(array6,'cy3',array8,'cy5'),(array6,'cy5',array7,'cy3'),(array6,'cy5',array7,'cy5'),(array6,'cy5',array8,'cy3'),(array6,'cy5',array8,'cy5'),(array7,'cy3',array8,'cy3'),(array7,'cy3',array8,'cy5'),(array7,'cy5',array8,'cy3'),(array7,'cy5',array8,'cy5')]
-mylist=[(array1,'cy3',array2,'cy3'),(array1,'cy5',array2,'cy3'),(array1,'cy3',array2,'cy5'),(array1,'cy5',array2,'cy5')]#,(array,'cy3',array5,'cy3'),(array7,'cy5',array5,'cy3'),(array7,'cy3',array5,'cy5'),(array7,'cy5',array5,'cy5'),(array8,'cy3',array5,'cy3'),(array8,'cy5',array5,'cy3'),(array8,'cy3',array5,'cy5'),(array8,'cy5',array5,'cy5')]
+#mylist=[(array1,'cy3',array2,'cy3'),(array1,'cy5',array2,'cy3'),(array1,'cy3',array2,'cy5'),(array1,'cy5',array2,'cy5')]#,(array,'cy3',array5,'cy3'),(array7,'cy5',array5,'cy3'),(array7,'cy3',array5,'cy5'),(array7,'cy5',array5,'cy5'),(array8,'cy3',array5,'cy3'),(array8,'cy5',array5,'cy3'),(array8,'cy3',array5,'cy5'),(array8,'cy5',array5,'cy5')]
+mylist=[(array1,'cy3',array2,'cy5')]
 
 n=1
 
@@ -308,7 +309,6 @@ for i in mylist:
     
     #a.get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
     a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
-    a.iprint()
     a.create_dicts()
     a.rewrite_file()
     a.calculate_DLRS()
