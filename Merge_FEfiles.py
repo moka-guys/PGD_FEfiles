@@ -17,9 +17,7 @@ class Merge_FEfile():
     The output file is names file1_file1dye_file2_file2dye.txt'''
     
     #specify the directory for input and output
-    #input text file
-    input_textfile="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\eve_input.txt"
-    
+   
     #where the FE files are
     #chosenfolder="F:\\PGD_FE\\"#USB
     chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
@@ -50,12 +48,12 @@ class Merge_FEfile():
     tempoutputfilename=''
     tempoutputfile=''
     
-    def read_input_txt_file(self):
+    def read_input_txt_file(self,inputfile):
         '''this module reads a input txt file (tab delimited with barcode 1, subarray number, dye 1, barcode 2, subarray, dye2)
         The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list''' 
         
         #open the input txt file
-        file2open = open(self.input_textfile,'r')
+        file2open = open(inputfile,'r')
         #for each line split into columns
         for line in file2open:
             #print line
@@ -379,28 +377,35 @@ class Merge_FEfile():
         self.log_dict.clear() 
         del self.all_derivatives[:]
         del self.filtered_derivatives[:]
-         
-#counter
-n=1
-
-#instance of the class
-a=Merge_FEfile()    
-# read the text input file
-a.read_input_txt_file()
-#identify the FE file and populate a list
-a.find_FEfiles()
-print "List of FE files completed"
-#loop through the list of files creating desired output.
-for i in Merge_FEfile.list_of_files: 
-    file_in_1=i[0]
-    file_in_2=i[2]
-    file_in_1_dye=i[1]
-    file_in_2_dye=i[3]  
-    #a.get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
-    a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
-    a.create_dicts()
-    a.rewrite_file()
-    a.calculate_DLRS()
+        
+        
+        
+if __name__ == '__main__':
+    #counter
+    n=1
     
-    print "done file "+str(n)+" of "+str(len(Merge_FEfile.list_of_files))
-    n=n+1
+    #input text file
+    #input_textfile="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\eve_input.txt"
+    input_textfile=(sys.argv[1])
+    
+    #instance of the class
+    a=Merge_FEfile()    
+    # read the text input file
+    a.read_input_txt_file(input_textfile)
+    #identify the FE file and populate a list
+    a.find_FEfiles()
+    print "List of FE files completed"
+    #loop through the list of files creating desired output.
+    for i in Merge_FEfile.list_of_files: 
+        file_in_1=i[0]
+        file_in_2=i[2]
+        file_in_1_dye=i[1]
+        file_in_2_dye=i[3]  
+        #a.get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+        a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
+        a.create_dicts()
+        a.rewrite_file()
+        a.calculate_DLRS()
+        
+        print "done file "+str(n)+" of "+str(len(Merge_FEfile.list_of_files))
+        n=n+1
