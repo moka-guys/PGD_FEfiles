@@ -16,14 +16,13 @@ class Merge_FEfile():
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction 
     The output file is names file1_file1dye_file2_file2dye.txt'''
     
-    #specify the directory for input and output
-   
     #where the FE files are
-    #chosenfolder="F:\\PGD_FE\\"#USB
-    chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
+    chosenfolder="F:\\PGD_FE\\Col_Testing\\"#USB
+    #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
-    #Where the output FE files to be saved 
-    outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
+    #Where the output FE files to be saved REMEMBER TO END WITH \\
+    #outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
+    outputfolder="F:\\PGD_FE\\Col_Testing\\output\\"
     
     # create dictionaries for features
     file1_dict={}
@@ -356,7 +355,7 @@ class Merge_FEfile():
             #except for line 7 which needs the DLSR updating
             elif i ==6:
                 splitline=line.split('\t')
-                splitline[166]=str(DLSR_sqrt)
+                splitline[118]=str(DLSR_sqrt)
                 to_add='\t'.join(splitline)
                 finaloutput.write(to_add)
         #print "file created"
