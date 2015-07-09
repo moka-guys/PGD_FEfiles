@@ -14,7 +14,14 @@ from decimal import *
 
 folder="F:\\PGD_FE\\Col_Testing\\output"
 for filename in os.listdir(folder):
-    print "FEfile created = "+filename.replace('_S01_1_1_',' ')
+    #print filename
+    #print "FEfile created = "+filename.replace('_S01_1_1_',' ')
+    fname=filename.replace('_S01_1_1_','_')
+    fname=fname.replace('.txt','')
+    fname=fname.replace('_F',' F')
+    fname=fname.lower()
+#     print fname
+    
     fefile=open(folder+"\\"+filename)
     for i, line in enumerate(fefile):
         if i == 15:
@@ -65,23 +72,21 @@ for filename in os.listdir(folder):
 
             assert processedsignal==ProcessedSigError and ProcessedSigError==MedianSignal and ProcessedSigError==BGMedianSignal and ProcessedSigError==BGPixSDev and ProcessedSigError==IsSaturated and ProcessedSigError==IsFeatNonUnifOL and ProcessedSigError==IsBGNonUnifOL and ProcessedSigError==IsFeatPopnOL and ProcessedSigError==IsBGPopnOL and ProcessedSigError==BGSubSignal and ProcessedSigError==IsPosAndSignif and ProcessedSigError==IsWellAboveBG and ProcessedSigError==BGMeanSignal
             
-            list_of_results=[("file_1_cy3 file_1_cy3",1),("file_1_cy3 file_1_cy5",0.25),("file_1_cy3 file2_cy3",0.2),("file_1_cy3 file2_cy5",0.02),("file_1_cy5 file_1_cy3",16),("file_1_cy5 file_1_cy5",4),("file_1_cy5 file2_cy3",3.2),("file_1_cy5 file2_cy5",.32),("file2_cy3 file_1_cy3",25),("file2_cy3 file_1_cy5",6.25),("file2_cy3 file2_cy3",5),("file2_cy3 file2_cy5",0.5),("file2_cy5 file_1_cy3",2500),("file2_cy5 file_1_cy5",625),("file2_cy5 file2_cy3",500),("file2_cy5 file2_cy5",50)]
+            list_of_results=[("file1_cy3 file1_cy3",1),("file1_cy3 file1_cy5",0.25),("file1_cy3 file2_cy3",0.2),("file1_cy3 file2_cy5",0.02),("file1_cy5 file1_cy3",16),("file1_cy5 file1_cy5",4),("file1_cy5 file2_cy3",3.2),("file1_cy5 file2_cy5",.32),("file2_cy3 file1_cy3",25),("file2_cy3 file1_cy5",6.25),("file2_cy3 file2_cy3",5),("file2_cy3 file2_cy5",0.5),("file2_cy5 file1_cy3",2500),("file2_cy5 file1_cy5",625),("file2_cy5 file2_cy3",500),("file2_cy5 file2_cy5",50)]
             #print processedsignal
             for i in list_of_results:
                 if i[1]==processedsignal:
-                    print "the combination of files and dyes used must have been "+i[0]
-            
+#                     print i[0]
+#                     print fname
+#                     print "the combination of files and dyes used must have been "+i[0]
+                    assert str(i[0])==fname
                 else:
                     pass
                     #print "error"+str(processedsignal) 
-            
-            
+
             logratio=round(float(linesplit[10]),8)
             
             check_log_ratio=round(float(math.log(float(rProcessedSignal)/float(gProcessedSignal),10)),8)
             assert logratio == check_log_ratio
-            print "original logratio "+str(logratio)+" check = "+str(check_log_ratio)+"\n"
-            
-            
-            
-            
+            #print "original logratio "+str(logratio)+" check = "+str(check_log_ratio)+"\n"
+print "Files match as expected"

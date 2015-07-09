@@ -187,7 +187,7 @@ class Merge_FEfile():
         '''extract the desired sample(dye) from the dictionaries and re-write the fefile'''
            
         # get the specified dye for each file
-        if str(self.file1_dye) in ("cy3","Cy3") and str(self.file2_dye) in ("cy3","Cy3"):
+        if str(self.file1_dye) in ("cy3","Cy3","CY3") and str(self.file2_dye) in ("cy3","Cy3","CY3"):
                
             #Sort the dictionary on the keys so the file is in order of feature number. remove newline
             for i in sorted(self.file1_dict.keys()):
@@ -212,7 +212,7 @@ class Merge_FEfile():
            
         # repeat for all combinations of dye      
            
-        if str(self.file1_dye) in ("cy3","Cy3") and str(self.file2_dye) in ("cy5","Cy5"):
+        if str(self.file1_dye) in ("cy3","Cy3","CY3") and str(self.file2_dye) in ("cy5","Cy5","CY5"):
             for i in sorted(self.file1_dict.keys()):
                 file1_line=self.file1_dict[i].rstrip()
                 f1=file1_line.split('\t')
@@ -227,7 +227,7 @@ class Merge_FEfile():
                 to_write=f1[0]+t+f1[1]+t+f1[2]+t+f1[3]+t+f1[4]+t+f1[5]+t+f1[6]+t+f1[7]+t+f1[8]+t+f1[9]+t+str(logratio)+t+logratioerr+t+pval+t+f1[13]+t+f2[14]+t+f1[15]+t+f2[16]+t+f1[17]+t+f2[18]+t+f1[19]+t+f2[20]+t+f1[21]+t+f2[22]+t+f1[23]+t+f2[24]+t+f1[25]+t+f2[26]+t+f1[27]+t+f2[28]+t+f1[29]+t+f2[30]+t+f1[31]+t+f2[32]+t+f1[33]+t+f1[34]+t+f2[35]+t+f1[36]+t+f2[37]+t+f1[38]+t+f2[39]+t+f1[40]+t+f1[41]+t+f2[42]+"\n"
                 self.tempoutputfile.write(to_write)
                       
-        if str(self.file1_dye) in ("cy5","Cy5") and str(self.file2_dye) in ("cy3","Cy3"):
+        if str(self.file1_dye) in ("cy5","Cy5","CY5") and str(self.file2_dye) in ("cy3","Cy3","CY3"):
             for i in sorted(self.file1_dict.keys()):
                 file1_line=self.file1_dict[i].rstrip()
                 f1=file1_line.split('\t')
@@ -241,7 +241,7 @@ class Merge_FEfile():
                 to_write=f1[0]+t+f1[1]+t+f1[2]+t+f1[3]+t+f1[4]+t+f1[5]+t+f1[6]+t+f1[7]+t+f1[8]+t+f1[9]+t+str(logratio)+t+logratioerr+t+pval+t+f1[14]+t+f2[13]+t+f1[16]+t+f2[15]+t+f1[18]+t+f2[17]+t+f1[20]+t+f2[19]+t+f1[22]+t+f2[21]+t+f1[24]+t+f2[23]+t+f1[26]+t+f2[25]+t+f1[28]+t+f2[27]+t+f1[30]+t+f2[29]+t+f1[32]+t+f2[31]+t+f1[33]+t+f1[35]+t+f2[34]+t+f1[37]+t+f2[36]+t+f1[39]+t+f2[38]+t+f1[40]+t+f1[42]+t+f2[41]+"\n"
                 self.tempoutputfile.write(to_write)    
                    
-        if self.file1_dye in ("cy5","Cy5") and self.file2_dye in ("cy5","Cy5"):
+        if self.file1_dye in ("cy5","Cy5","CY5") and self.file2_dye in ("cy5","Cy5","CY5"):
             for i in sorted(self.file1_dict.keys()):
                 file1_line=self.file1_dict[i].rstrip()
                 f1=file1_line.split('\t')
