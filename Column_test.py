@@ -17,7 +17,7 @@ It ensures the correct columns are selected and that the log ratio is calculated
 file 1 cy3 values = 1
 file 1 cy5 values = 4
 file 2 cy3 values = 5
-file 2 cy5 values = 20
+file 2 cy5 values = 50
 The input file specifies all 16 combinations of these columns.
 '''
 
