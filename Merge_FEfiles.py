@@ -10,13 +10,20 @@ import os
 import fnmatch
 
 class Merge_FEfile():
-    ''' Usage: python create_dict_of_2_files.py file1,file1_dye,file2,file2_dye 
-    File$ and File$_Dye specifies which samples (dye) you would like to combine
-    This program creates a new FE file from these two samples. 
+    ''' 
+    Cmd line Usage: python Merge_FEfiles.py inputfile.txt 
+    
+    input file is a tab delimited file in format:
+    barcode 1    subarray    dye1    barcode 2    subarray    dye 2
+    
+    
+    This program finds the two FE file which matches this input and creates a new FE file from these two samples using the dyes specified. 
+    
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction 
+    
     The output file is names file1_file1dye_file2_file2dye.txt'''
     
-    #where the FE files are
+    #where the FE files are REMEMBER TO END WITH \\
     chosenfolder="F:\\PGD_FE\\Col_Testing\\"#USB
     #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
@@ -47,8 +54,13 @@ class Merge_FEfile():
     tempoutputfilename=''
     tempoutputfile=''
     
+    #length of files
+    file1_len=''
+    file2_len=''
+    output_len=''
+    
     def read_input_txt_file(self,inputfile):
-        '''this module reads a input txt file (tab delimited with barcode 1, subarray number, dye 1, barcode 2, subarray, dye2)
+        '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
         The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list''' 
         
         #open the input txt file
@@ -123,13 +135,14 @@ class Merge_FEfile():
             file1_filename=None
             file2_filename=None
             
-            #search for a FE file which matches the pattern for both files
+            #search for a FE file which matches the filename pattern 
             for file in os.listdir(self.chosenfolder):
+                #file 1
                 if fnmatch.fnmatch(file, file1_pattern):
                     file1_filename=file
                 else:
                     pass
-                
+                #file 2
                 if fnmatch.fnmatch(file, file2_pattern):
                     file2_filename=file
                 else:
@@ -142,8 +155,7 @@ class Merge_FEfile():
                 print "no match for "+file1_pattern+" and "+file1_pattern 
     
     def get_sys_argvs(self,file1_in,dye1_in,file2_in,dye2_in):
-        '''capture the arguments'''
-        #capture variables from cmd line
+        '''capture file names and dyes from list'''
         self.file1=file1_in
         self.file2=file2_in
         self.file1_dye=dye1_in
@@ -154,17 +166,21 @@ class Merge_FEfile():
         '''open files, create the temporary file and add features to dictionaries '''        
         #open files
         file1_open=open(self.chosenfolder+self.file1,'r')
-        file2_open=open(self.chosenfolder+self.file2,'r')
+        file2_open=open(self.chosenfolder+self.file2,'r')      
           
-          
-        # create and open output file (remove .txt extension from filenames)
+        # remove string from filename
         pre_output1=self.file1.replace("_S01_Guys121919_CGH_1100_Jul11",'')
         pre_output2=self.file2.replace("_S01_Guys121919_CGH_1100_Jul11",'')
+        
+        # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt 
         self.outputfilename=pre_output1.replace(".txt", '')+"_"+self.file1_dye+"_"+pre_output2.replace(".txt", '')+"_"+self.file2_dye+".txt"
+        
+        #add temp to end of file name to create a temporary output file
         self.tempoutputfilename=self.outputfilename.replace(".txt", '')+"temp.txt"
+        #open temp output file
         self.tempoutputfile=open(self.outputfolder+self.tempoutputfilename,'w')
            
-        # open the first file and write first 10 lines (stats, feparams) to the output file.
+        # open file1 and write the first 10 lines (stats, feparams) to the output file.
         for i, line in enumerate (file1_open):
             if i < 10:
                 self.tempoutputfile.write(line)
@@ -172,13 +188,17 @@ class Merge_FEfile():
             if i >= 10:
                 splitline=line.split('\t')
                 self.file1_dict[int(splitline[1])] = line
-           
+        #get n of rows in file1
+        self.file1_len=i
+        
         #repeat for features in second file
-        for i, line in enumerate(file2_open):
-            if i>=10:
+        for j, line in enumerate(file2_open):
+            if j>=10:
                 splitline=line.split('\t')
                 self.file2_dict[int(splitline[1])] = line
-           
+        #get n of rows in file2
+        self.file2_len=j   
+        
         #close files
         file1_open.close()
         file2_open.close()
@@ -263,15 +283,15 @@ class Merge_FEfile():
         '''To calculate the DLRS the newly created temp file is read.
         The chromosome, start and log ratio are added to a new array
         This array is sorted on genomic coords.
-        Maintaining the order a list of log ratios for each chrom are added to a dictionary with chrom as the key.
+        Maintaining this order a list of all the log ratios for each chrom are added to a dictionary with chrom as the key.
         For each chromosome the list is read and the previous log ratio is subtracted to create a list of derivatives (differences between probes) 
         The interquartile ranges are calculated and only the middle 50% of derivatves are kept.
         The SD of these derivatives is calculated
         This is then put into the stats line and the final output file is created    
         '''
         #open tempoutput file as read only
-        outputfile2=open(self.outputfolder+self.tempoutputfilename,'r')
-        for i, line in enumerate(outputfile2):
+        tempoutputfile=open(self.outputfolder+self.tempoutputfilename,'r')
+        for i, line in enumerate(tempoutputfile):
             #for all features:
             if i >= 10:
                 splitline=line.split('\t')
@@ -299,13 +319,11 @@ class Merge_FEfile():
                  
             else:
                 pass        
-        outputfile2.close()
+        tempoutputfile.close()
          
- 
         #sort the arrays so probes are in genomic order    
         self.sortedarray=sorted(self.array1,key=lambda tup: tup[1])
         self.sortedarray=sorted(self.sortedarray,key=lambda tup: tup[0])
-           
            
         #go through each chromosome in order, and pull out the log ratio scores from the array (these should be in order) and add to a list. Add this list to a dictionary with the key as chromosome number
         for i in range(1,25):
@@ -346,10 +364,10 @@ class Merge_FEfile():
             
         #open the final output file
         finaloutput=open(self.outputfolder+self.outputfilename,'w')
-        outputfile3=open(self.outputfolder+self.tempoutputfilename,'r')
+        tempoutputfile=open(self.outputfolder+self.tempoutputfilename,'r')
            
         #loop through the temp file and print it to a new file
-        for i, line in enumerate(outputfile3):
+        for i, line in enumerate(tempoutputfile):
             if i != 6:
                 finaloutput.write(line)
             #except for line 7 which needs the DLSR updating
@@ -358,10 +376,15 @@ class Merge_FEfile():
                 splitline[118]=str(DLSR_sqrt)
                 to_add='\t'.join(splitline)
                 finaloutput.write(to_add)
-        #print "file created"
-           
+        
+        #get n of rows in output file
+        self.output_len=i
+        
+        #check the output file is the same length as the two input files.
+        assert self.file1_len==self.file2_len and self.file1_len==self.output_len
+        
         #close files
-        outputfile3.close()
+        tempoutputfile.close()
         finaloutput.close()
         
         #delete temporary file
@@ -389,21 +412,26 @@ if __name__ == '__main__':
     
     #instance of the class
     a=Merge_FEfile()    
-    # read the text input file
+    # send to function the input text file
     a.read_input_txt_file(input_textfile)
-    #identify the FE file and populate a list
+    #Call module to find the matching FE file
     a.find_FEfiles()
-    print "List of FE files completed"
+    
+    
     #loop through the list of files creating desired output.
-    for i in Merge_FEfile.list_of_files: 
+    for i in Merge_FEfile.list_of_files:
+        #create variables of file1, dye, file2, dye 
         file_in_1=i[0]
         file_in_2=i[2]
         file_in_1_dye=i[1]
         file_in_2_dye=i[3]  
-        #a.get_sys_argvs(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+        #send variables to get_sys_argvs
         a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
+        #open these files and put into dictionarys
         a.create_dicts()
+        #pull out desired rows and write to temp file
         a.rewrite_file()
+        #calculate DLRS and write to final output file
         a.calculate_DLRS()
         
         print "done file "+str(n)+" of "+str(len(Merge_FEfile.list_of_files))
