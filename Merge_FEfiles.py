@@ -17,19 +17,20 @@ class Merge_FEfile():
     barcode 1    subarray    dye1    barcode 2    subarray    dye 2
     
     
-    This program finds the two FE file which matches this input and creates a new FE file from these two samples using the dyes specified. 
-    
+    This script finds the two FE file which matches this input and creates a new FE file from these two samples using the dyes specified. 
+    The log ratio is re calculated
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction 
     
-    The output file is names file1_file1dye_file2_file2dye.txt'''
+    The output file is names file1_file1dye_file2_file2dye.txt
+    '''
     
     #where the FE files are REMEMBER TO END WITH \\
-    chosenfolder="F:\\PGD_FE\\Col_Testing\\"#USB
+    chosenfolder="F:\\PGD_FE\\Col_Testing\\"# column_test_USB
     #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
     #Where the output FE files to be saved REMEMBER TO END WITH \\
     #outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
-    outputfolder="F:\\PGD_FE\\Col_Testing\\output\\"
+    outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB 
     
     # create dictionaries for features
     file1_dict={}
@@ -162,7 +163,7 @@ class Merge_FEfile():
         self.file2_dye=dye2_in      
      
           
-    def create_dicts (self):
+    def create_dicts(self):
         '''open files, create the temporary file and add features to dictionaries '''        
         #open files
         file1_open=open(self.chosenfolder+self.file1,'r')
@@ -175,7 +176,7 @@ class Merge_FEfile():
         # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt 
         self.outputfilename=pre_output1.replace(".txt", '')+"_"+self.file1_dye+"_"+pre_output2.replace(".txt", '')+"_"+self.file2_dye+".txt"
         
-        #add temp to end of file name to create a temporary output file
+        #add temp to end of file name to create a temporary output filename
         self.tempoutputfilename=self.outputfilename.replace(".txt", '')+"temp.txt"
         #open temp output file
         self.tempoutputfile=open(self.outputfolder+self.tempoutputfilename,'w')
@@ -184,7 +185,7 @@ class Merge_FEfile():
         for i, line in enumerate (file1_open):
             if i < 10:
                 self.tempoutputfile.write(line)
-            #then add the features to a dictionary, with the feature number as a key
+            #then add all features to a dictionary, with the unique feature number as a key
             if i >= 10:
                 splitline=line.split('\t')
                 self.file1_dict[int(splitline[1])] = line
@@ -419,7 +420,7 @@ if __name__ == '__main__':
     
     
     #loop through the list of files creating desired output.
-    for i in Merge_FEfile.list_of_files:
+    for i in a.list_of_files:
         #create variables of file1, dye, file2, dye 
         file_in_1=i[0]
         file_in_2=i[2]

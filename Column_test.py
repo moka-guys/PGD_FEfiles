@@ -22,7 +22,8 @@ The input file specifies all 16 combinations of these columns.
 '''
 
 #folder containing all the test FE files.
-folder="F:\\PGD_FE\\Col_Testing\\output"
+#folder="F:\\PGD_FE\\Col_Testing\\output"
+folder="F:\\PGD files\\output"
 
 #for each file: 
 for filename in os.listdir(folder):
