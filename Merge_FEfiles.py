@@ -11,11 +11,10 @@ import fnmatch
 
 class Merge_FEfile():
     ''' 
-    Cmd line Usage: python Merge_FEfiles.py inputfile.txt 
+    Cmd line Usage: python Merge_FEfiles.py inputfile.txt output folder 
     
     input file is a tab delimited file in format:
     barcode 1    subarray    dye1    barcode 2    subarray    dye 2
-    
     
     This script finds the two FE file which matches this input and creates a new FE file from these two samples using the dyes specified. 
     The log ratio is re calculated
@@ -28,9 +27,14 @@ class Merge_FEfile():
     chosenfolder="F:\\PGD_FE\\Col_Testing\\"# column_test_USB
     #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
-    #Where the output FE files to be saved REMEMBER TO END WITH \\
+
+    #when output folder is taken from command line argument:
+    outputfolder=''
+    
+    #if hard coded: REMEMBER TO END WITH \\
     #outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
-    outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB 
+    #outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB 
+    
     
     # create dictionaries for features
     file1_dict={}
@@ -60,9 +64,12 @@ class Merge_FEfile():
     file2_len=''
     output_len=''
     
-    def read_input_txt_file(self,inputfile):
+    def read_input_txt_file(self,inputfile,outputfolder):
         '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
         The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list''' 
+        
+        #set output folder from sys argv and append // 
+        self.outputfolder=outputfolder+"//"
         
         #open the input txt file
         file2open = open(inputfile,'r')
@@ -411,10 +418,13 @@ if __name__ == '__main__':
     #input_textfile="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\eve_input.txt"
     input_textfile=(sys.argv[1])
     
+    #second argument is output folder
+    outputfolder=(sys.argv[2])
+    
     #instance of the class
     a=Merge_FEfile()    
-    # send to function the input text file
-    a.read_input_txt_file(input_textfile)
+    # send to function the input text file and outputfolder
+    a.read_input_txt_file(input_textfile,outputfolder)
     #Call module to find the matching FE file
     a.find_FEfiles()
     
