@@ -1,6 +1,6 @@
 '''
 Created on 26 Jun 2015
-add this comment to test github commit desciption
+
 @author: Aled
 '''
 import sys
@@ -12,6 +12,7 @@ import fnmatch
 class Merge_FEfile():
     ''' 
     Cmd line Usage: python Merge_FEfiles.py inputfile.txt output folder 
+    (No trailing backslash for the output folder)
     
     input file is a tab delimited file in format:
     barcode 1    subarray    dye1    barcode 2    subarray    dye 2
@@ -24,8 +25,8 @@ class Merge_FEfile():
     '''
     
     #where the FE files are REMEMBER TO END WITH \\
-    chosenfolder="F:\\PGD_FE\\Col_Testing\\"# column_test_USB
-    #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
+    #chosenfolder="F:\\PGD_FE\\Col_Testing\\"# column_test_USB
+    chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
 
     #when output folder is taken from command line argument:
