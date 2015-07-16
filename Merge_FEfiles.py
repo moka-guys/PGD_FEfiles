@@ -13,6 +13,7 @@ import csv
 class Merge_FEfile():
     ''' 
     Cmd line Usage: python Merge_FEfiles.py inputfile.txt output folder 
+    There is no need for a trailing / for the output folder
     
     input file is a tab delimited file in format:
     barcode 1    subarray    dye1    barcode 2    subarray    dye 2
