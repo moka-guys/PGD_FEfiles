@@ -8,6 +8,7 @@ import math
 import numpy
 import os
 import fnmatch
+import csv
 
 class Merge_FEfile():
     ''' 
@@ -24,7 +25,7 @@ class Merge_FEfile():
     '''
     
     #where the FE files are REMEMBER TO END WITH \\
-    chosenfolder="F:\\PGD_FE\\Col_Testing\\"# column_test_USB
+    chosenfolder="F:\\PGD_FE\\"#Col_Testing\\"# column_test_USB
     #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
 
@@ -351,24 +352,45 @@ class Merge_FEfile():
             # for that number of probes
             for j in range(num_of_probes):
                 #excluding the first probe (as there is no probe to subtract)
-                if j > 1:
+                if j > 0:
                     #pull out log ratio and calculate the difference between that and the previous probe. subtract the previous one from this probe and append to a new list
                     n=float(self.log_dict[i][j])-float(self.log_dict[i][j-1])
                     self.all_derivatives.append(n)
            
-         
-        #use numpy to get the 25 and 75 percentile
+        #=======================================================================
+        # DLRSFile=open(self.outputfolder+"DLRS_"+self.outputfilename,'w')
+        # # sort list of derivatives
+        # #self.all_derivatives=sorted(self.all_derivatives)
+        # 
+        # for i in self.all_derivatives:
+        #     DLRSFile.write(str(i)+"\n")
+        # DLRSFile.close()
+        #=======================================================================
+        
+        # get 1st and 3rd quartile
         q75,q25=numpy.percentile(self.all_derivatives,[75,25])
-        for i in self.all_derivatives:
-            if q25< i <q75:
-                self.filtered_derivatives.append(i)
-        #print "len of all_derivatives: "+str(len(self.all_derivatives))
-        #print "len of filtered SD: "+str(len(self.filtered_derivatives))
-           
-        #calculate the DLSR by calculating the SD of this list    
-        DLSR=numpy.std(self.filtered_derivatives)
+        #calculate 1st quartile-3rd quartile and divide by 1.35
+        DLRS=numpy.divide(q75-q25,1.35)
         sqrt2=numpy.sqrt(2)
-        DLSR_sqrt=numpy.divide(DLSR,sqrt2)
+        DLRS_sqrt=numpy.divide(DLRS,sqrt2)
+        
+        #=======================================================================
+        # old DLRS
+        # #use numpy to get the 25 and 75 percentile
+        # q75,q25=numpy.percentile(self.all_derivatives,[75,25])
+        # for i in self.all_derivatives:
+        #     if q25< i <q75:
+        #         self.filtered_derivatives.append(i)
+        # #print "len of all_derivatives: "+str(len(self.all_derivatives))
+        # #print "len of filtered SD: "+str(len(self.filtered_derivatives))
+        #=======================================================================
+        #=======================================================================
+        #    
+        # #calculate the DLSR by calculating the SD of this list    
+        # DLSR=numpy.std(self.filtered_derivatives)
+        # sqrt2=numpy.sqrt(2)
+        # DLSR_sqrt=numpy.divide(DLSR,sqrt2)
+        #=======================================================================
             
         #open the final output file
         finaloutput=open(self.outputfolder+self.outputfilename,'w')
@@ -381,7 +403,7 @@ class Merge_FEfile():
             #except for line 7 which needs the DLSR updating
             elif i ==6:
                 splitline=line.split('\t')
-                splitline[118]=str(DLSR_sqrt)
+                splitline[118]=str(DLRS_sqrt)
                 to_add='\t'.join(splitline)
                 finaloutput.write(to_add)
         
