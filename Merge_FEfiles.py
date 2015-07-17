@@ -321,8 +321,8 @@ class Merge_FEfile():
                     splitline.insert(9,int(splitgenloc[1]))
                     splitline.insert(10,int(splitgenloc[2]))
                        
-                    #append to an array (chrom, start and logratio score)
-                    self.array1.append((splitline[8],splitline[9],splitline[13]))
+                    #append to an array (chrom, start and gprocessedsignal,rprocessedsignal)
+                    self.array1.append((splitline[8],splitline[9],splitline[16],splitline[17]))
                  
                 elif int(splitline[5])==0 and len(splitline)!=43:
                     raise ValueError ("temp file feature length !=43")
@@ -340,8 +340,9 @@ class Merge_FEfile():
             list=[]
             for k in self.sortedarray:
                 if k[0]==i:
-                    #print k
-                    list.append(k[2]) 
+                    #taking processed signal int calculate the log2 ratio: log2(red/green)
+                    log2=math.log(numpy.divide(float(k[3]),float(k[2])),2)
+                    list.append(log2) 
             self.log_dict[i]=list
          
         # self.log_dict is {(chrom: 'probe1 log score','probe 2 log score'...).(chrom2:'probe1 log score;,...)}
@@ -358,15 +359,13 @@ class Merge_FEfile():
                     n=float(self.log_dict[i][j])-float(self.log_dict[i][j-1])
                     self.all_derivatives.append(n)
            
-        #=======================================================================
-        # DLRSFile=open(self.outputfolder+"DLRS_"+self.outputfilename,'w')
-        # # sort list of derivatives
-        # #self.all_derivatives=sorted(self.all_derivatives)
-        # 
-        # for i in self.all_derivatives:
-        #     DLRSFile.write(str(i)+"\n")
-        # DLRSFile.close()
-        #=======================================================================
+        DLRSFile=open(self.outputfolder+"DLRS_"+self.outputfilename,'w')
+        # sort list of derivatives
+        #self.all_derivatives=sorted(self.all_derivatives)
+         
+        for i in self.all_derivatives:
+            DLRSFile.write(str(i)+"\n")
+        DLRSFile.close()
         
         # get 1st and 3rd quartile
         q75,q25=numpy.percentile(self.all_derivatives,[75,25])
