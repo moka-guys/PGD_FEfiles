@@ -453,19 +453,22 @@ if __name__ == '__main__':
     
     #loop through the list of files creating desired output.
     for i in a.list_of_files:
-        #create variables of file1, dye, file2, dye 
-        file_in_1=i[0]
-        file_in_2=i[2]
-        file_in_1_dye=i[1]
-        file_in_2_dye=i[3]  
-        #send variables to get_sys_argvs
-        a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
-        #open these files and put into dictionarys
-        a.create_dicts()
-        #pull out desired rows and write to temp file
-        a.rewrite_file()
-        #calculate DLRS and write to final output file
-        a.calculate_DLRS()
+        if len(i)==4:
+            #create variables of file1, dye, file2, dye 
+            file_in_1=i[0]
+            file_in_2=i[2]
+            file_in_1_dye=i[1]
+            file_in_2_dye=i[3]  
+            #send variables to get_sys_argvs
+            a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
+            #open these files and put into dictionarys
+            a.create_dicts()
+            #pull out desired rows and write to temp file
+            a.rewrite_file()
+            #calculate DLRS and write to final output file
+            a.calculate_DLRS()
+        else:
+            print "error in input file for "+ i
         
         print "done file "+str(n)+" of "+str(len(Merge_FEfile.list_of_files))
         n=n+1
