@@ -458,7 +458,13 @@ if __name__ == '__main__':
             file_in_1=i[0]
             file_in_2=i[2]
             file_in_1_dye=i[1]
-            file_in_2_dye=i[3]  
+            file_in_2_dye=i[3]
+            
+            #assert the array design is the same (get the array design from barcode)
+            file_in_1_design=file_in_1[2:7]
+            file_in_2_design=file_in_2[2:7]
+            assert file_in_1_design==file_in_2_design
+              
             #send variables to get_sys_argvs
             a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
             #open these files and put into dictionarys
