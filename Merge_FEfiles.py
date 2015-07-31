@@ -146,15 +146,15 @@ class Merge_FEfile():
             file2_filename=None
             
             #search for a FE file which matches the filename pattern 
-            for file in os.listdir(self.chosenfolder):
+            for afile in os.listdir(self.chosenfolder):
                 #file 1
-                if fnmatch.fnmatch(file, file1_pattern):
-                    file1_filename=file
+                if fnmatch.fnmatch(afile, file1_pattern):
+                    file1_filename=afile
                 else:
                     pass
                 #file 2
-                if fnmatch.fnmatch(file, file2_pattern):
-                    file2_filename=file
+                if fnmatch.fnmatch(afile, file2_pattern):
+                    file2_filename=afile
                 else:
                     pass
                 
@@ -337,13 +337,13 @@ class Merge_FEfile():
            
         #go through each chromosome in order, and pull out the log ratio scores from the array (these should be in order) and add to a list. Add this list to a dictionary with the key as chromosome number
         for i in range(1,25):
-            list=[]
+            alist=[]
             for k in self.sortedarray:
                 if k[0]==i:
                     #taking processed signal int calculate the log2 ratio: log2(red/green)
                     log2=math.log(numpy.divide(float(k[3]),float(k[2])),2)
-                    list.append(log2) 
-            self.log_dict[i]=list
+                    alist.append(log2) 
+            self.log_dict[i]=alist
          
         # self.log_dict is {(chrom: 'probe1 log score','probe 2 log score'...).(chrom2:'probe1 log score;,...)}
            
