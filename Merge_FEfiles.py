@@ -476,5 +476,5 @@ if __name__ == '__main__':
         else:
             print "error in input file for "+ i
         
-        print "done file "+str(n)+" of "+str(len(Merge_FEfile.list_of_files))
+        print "done file "+str(n)+" of "+str(len(a.list_of_files))
         n=n+1
