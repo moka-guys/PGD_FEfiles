@@ -1,7 +1,5 @@
 '''
-Created on 26 Jun 2015
-add this comment to test github commit desciption
-@author: Aled
+Updated 11/8/15
 '''
 import sys
 import math
@@ -26,8 +24,8 @@ class Merge_FEfile():
     '''
     
     #where the FE files are REMEMBER TO END WITH \\
-    chosenfolder="F:\\PGD_FE\\"#Col_Testing\\"# column_test_USB
-    #chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
+    #chosenfolder="I:\\PGD_FE\\"#Col_Testing\\"# column_test_USB
+    chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
 
     #when output folder is taken from command line argument:
@@ -104,7 +102,7 @@ class Merge_FEfile():
             elif file1_subarray == 8:
                 file1_subarray="2_4.txt"
             else:
-                print "error in file 1 subarray"+str(file1_subarray)
+                raise ValueError ("error in file 1 subarray: "+str(file1_subarray))
                 
             if file2_subarray == 1:
                 file2_subarray="1_1.txt"
@@ -123,7 +121,7 @@ class Merge_FEfile():
             elif file2_subarray == 8:
                 file2_subarray="2_4.txt"
             else:
-                print "error in file 2 subarray"+str(file2_subarray)
+                raise ValueError ("error in file 2 subarray: "+str(file2_subarray))
             
             #concatenate barcode and new subarray value to a filename pattern to search for
             filename1=str(file1_barcode)+"_S01*"+file1_subarray
@@ -187,6 +185,7 @@ class Merge_FEfile():
         
         #add temp to end of file name to create a temporary output filename
         self.tempoutputfilename=self.outputfilename.replace(".txt", '')+"temp.txt"
+        
         #open temp output file
         self.tempoutputfile=open(self.outputfolder+self.tempoutputfilename,'w')
            
@@ -198,6 +197,7 @@ class Merge_FEfile():
             if i >= 10:
                 splitline=line.split('\t')
                 self.file1_dict[int(splitline[1])] = line
+        
         #get n of rows in file1
         self.file1_len=i
         
@@ -208,6 +208,8 @@ class Merge_FEfile():
                 self.file2_dict[int(splitline[1])] = line
         #get n of rows in file2
         self.file2_len=j   
+        
+
         
         #close files
         file1_open.close()
@@ -284,10 +286,9 @@ class Merge_FEfile():
                 pval=str(0)
                 to_write=f1[0]+t+f1[1]+t+f1[2]+t+f1[3]+t+f1[4]+t+f1[5]+t+f1[6]+t+f1[7]+t+f1[8]+t+f1[9]+t+str(logratio)+t+logratioerr+t+pval+t+f1[14]+t+f2[14]+t+f1[16]+t+f2[16]+t+f1[18]+t+f2[18]+t+f1[20]+t+f2[20]+t+f1[22]+t+f2[22]+t+f1[24]+t+f2[24]+t+f1[26]+t+f2[26]+t+f1[28]+t+f2[28]+t+f1[30]+t+f2[30]+t+f1[32]+t+f2[32]+t+f1[33]+t+f1[35]+t+f2[35]+t+f1[37]+t+f2[37]+t+f1[39]+t+f2[39]+t+f1[40]+t+f1[42]+t+f2[42]+"\n"
                 self.tempoutputfile.write(to_write)   
+        
         #close temp file now it's written
         self.tempoutputfile.close()
-       
-   
        
     def calculate_DLRS(self):
         '''To calculate the DLRS the newly created temp file is read.
@@ -344,8 +345,7 @@ class Merge_FEfile():
                     log2=math.log(numpy.divide(float(k[3]),float(k[2])),2)
                     alist.append(log2) 
             self.log_dict[i]=alist
-         
-        # self.log_dict is {(chrom: 'probe1 log score','probe 2 log score'...).(chrom2:'probe1 log score;,...)}
+            # self.log_dict is {(chrom: 'probe1 log score','probe 2 log score'...).(chrom2:'probe1 log score;,...)}
            
         # for each chromosome (i is the key (chrom))
         for i in self.log_dict:
@@ -358,15 +358,22 @@ class Merge_FEfile():
                     #pull out log ratio and calculate the difference between that and the previous probe. subtract the previous one from this probe and append to a new list
                     n=float(self.log_dict[i][j])-float(self.log_dict[i][j-1])
                     self.all_derivatives.append(n)
-           
-        DLRSFile=open(self.outputfolder+"DLRS_"+self.outputfilename,'w')
-        # sort list of derivatives
-        #self.all_derivatives=sorted(self.all_derivatives)
-         
-        for i in self.all_derivatives:
-            DLRSFile.write(str(i)+"\n")
-        DLRSFile.close()
         
+        
+        #=======================================================================
+        # #create a file containing only the derivatives to help in DLRS calculations
+        # #open file with prefix DLRS_   
+        # DLRSFile=open(self.outputfolder+"DLRS_"+self.outputfilename,'w')
+        # 
+        # # sort list of derivatives
+        # #self.all_derivatives=sorted(self.all_derivatives) 
+        # #write derivative to file
+        # for i in self.all_derivatives:
+        #     DLRSFile.write(str(i)+"\n")
+        # DLRSFile.close()
+        #=======================================================================
+        
+        #calculate DLRS
         # get 1st and 3rd quartile
         q75,q25=numpy.percentile(self.all_derivatives,[75,25])
         #calculate 1st quartile-3rd quartile and divide by 1.35
@@ -407,11 +414,18 @@ class Merge_FEfile():
                 to_add='\t'.join(splitline)
                 finaloutput.write(to_add)
         
-        #get n of rows in output file
+        #get n of rows in output file        
         self.output_len=i
+                
+        #======================================================================= 
+        # print "self.file1_len "+str(self.file1_len)
+        # print "self.file2_len "+str(self.file2_len)
+        # print "self.output_len "+str(self.output_len)
+        #=======================================================================
         
         #check the output file is the same length as the two input files.
-        assert self.file1_len==self.file2_len and self.file1_len==self.output_len
+        assert self.file1_len==self.file2_len, "Two input files are not the same length" 
+        assert self.file1_len==self.output_len, "Output file is not the same length as input files"
         
         #close files
         tempoutputfile.close()
@@ -463,7 +477,8 @@ if __name__ == '__main__':
             #assert the array design is the same (get the array design from barcode)
             file_in_1_design=file_in_1[2:7]
             file_in_2_design=file_in_2[2:7]
-            assert file_in_1_design==file_in_2_design
+            assert file_in_1_design==file_in_2_design,"Two arrays are not the same design. File 1: "+file_in_1+" File 2: "+file_in_2
+            
               
             #send variables to get_sys_argvs
             a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
