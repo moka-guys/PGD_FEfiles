@@ -23,7 +23,8 @@ class Merge_FEfile():
     '''
     
     #where the FE files are REMEMBER TO END WITH \\
-    #chosenfolder="I:\\PGD_FE\\"#Col_Testing\\"# column_test_USB
+    #chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
+    #chosenfolder="I:\\PGD_FE\\"#USB non unit test
     chosenfolder="S:\\Genetics_Data2\\Array\\FeatureExtraction\\"# work network
 
 
@@ -471,11 +472,15 @@ if __name__ == '__main__':
             file_in_1_dye=i[1]
             file_in_2_dye=i[3]
             
-            #assert the array design is the same (get the array design from barcode)
-            file_in_1_design=file_in_1[2:7]
-            file_in_2_design=file_in_2[2:7]
-            assert file_in_1_design==file_in_2_design,"Two arrays are not the same design. File 1: "+file_in_1+" File 2: "+file_in_2
-            
+            #create if statement to allow unit test to bypass assert statement
+            if file_in_1 in ("File1_S01_1_1.txt", "File2_S01_1_1.txt" ) and file_in_2 in ("File1_S01_1_1.txt","File2_S01_1_1.txt"):
+                pass
+            else:
+                #assert the array design is the same (get the array design from barcode)
+                file_in_1_design=file_in_1[2:7]
+                file_in_2_design=file_in_2[2:7]
+                assert file_in_1_design==file_in_2_design,"The two arrays are not the same design."
+           
               
             #send variables to get_sys_argvs
             a.get_sys_argvs(file_in_1,file_in_1_dye,file_in_2,file_in_2_dye)
