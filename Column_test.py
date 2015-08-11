@@ -28,9 +28,7 @@ folder="F:\\PGD files\\output"
 #for each file: 
 for filename in os.listdir(folder):
     #remove strings and manipulate to replicate the names of the expected file outcomes "file1_dye file2_dye"
-    fname=filename.replace('_S01_1_1_','_')
-    fname=fname.replace('.txt','')
-    fname=fname.replace('_F',' F')
+    fname=filename.replace('_S01_1_1_','_').replace('.txt','').replace('_F',' F')
     fname=fname.lower()
 
     #open the fe file    
