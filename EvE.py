@@ -6,7 +6,6 @@ import math
 import numpy
 import os
 import fnmatch
-import csv
 
 class Merge_FEfile():
     ''' 
@@ -310,12 +309,10 @@ class Merge_FEfile():
                 if int(splitline[5])==0 and len(splitline)==43:
                     #split the genomic location into three new fields
                     genloc=splitline[7]
-                    genloc=genloc.replace('chr','')
-                    splitgenloc=genloc.replace('-',':').split(':')
-                       
+                    splitgenloc=genloc.replace('chr','').replace('-',':').split(':')
+                    
                     #change X and Y to numerical
-                    splitgenloc[0]=splitgenloc[0].replace('X','23')
-                    splitgenloc[0]=splitgenloc[0].replace('Y','24')
+                    splitgenloc[0]=splitgenloc[0].replace('X','23').replace('Y','24')
                        
                     # insert the split genomic location into the line
                     splitline.insert(8,int(splitgenloc[0]))
