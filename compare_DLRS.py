@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import numpy
 
 # where the eve files are
 eve_output="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\aled_DLRS\\EvE_output"
@@ -23,7 +24,7 @@ for file in os.listdir(eve_output):
     subarray_text=file[15:18]
     
     #open a file to record the output
-    output_file=open("S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\aled_DLRS\\DLRS_comparison.txt",'a')
+    output_file=open("S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\aled_DLRS\\800_DLRS_comparison.txt",'a+')
     
     #create a string to match to the original file name
     file_to_match=str(barcode) + "_S01*" + str(subarray_text)+".txt"
@@ -49,5 +50,27 @@ for file in os.listdir(eve_output):
     # print the progress
     print "done file "+str(n)+" of " + str(number_of_files)
     n=n+1
+    
+output_file.seek(0)
+eve=[]
+original=[]
+for k in output_file:
+    split=k.split("\t")
+    eve.append(float(split[2]))
+    original.append(float(split[4]))
+
+eve_std=numpy.std(eve)
+eve_mean=numpy.mean()
+orig_std=numpy.std(original)
+orig_mean=numpy.mean(original)
+
+output_file.write("original_mean \t"+str(orig_mean))
+output_file.write("\n original_STD \t"+str(orig_std))
+output_file.write("\n original sample size \t"+str(len(original)+"\n"))
+output_file.write("\n eve_mean \t"+str(eve_mean))
+output_file.write("\n eve_STD \t"+str(eve_std))
+output_file.write("\n eve_sample size \t"+str(len(eve)))
+
 # close file
 output_file.close()
+
