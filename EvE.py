@@ -77,6 +77,9 @@ class Merge_FEfile():
         for line in file2open:
             #print line
             splitline=line.split('\t')
+            if splitline[0]=='' or splitline[1]=='' or splitline[2]=='' or splitline[3]=='' or splitline[4]=='' or splitline[5]=='':
+                raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
+                Please open in notepad and ensure there are no blank lines and all fields are present")
             file1_barcode=splitline[0]
             file1_subarray=int(splitline[1])
             file1_dye=splitline[2]
