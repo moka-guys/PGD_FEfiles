@@ -68,8 +68,8 @@ class Merge_FEfile():
         '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
         The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list'''
 
-        # set output folder from sys argv and append //
-        self.outputfolder = outputfolder + "//"
+        # set output folder from sys argv and append \\
+        self.outputfolder = outputfolder + "\\"
 
         # open the input txt file
         file2open = open(inputfile, 'r')
@@ -443,7 +443,9 @@ class Merge_FEfile():
 if __name__ == '__main__':
     # counter
     n = 1
-
+    
+    print "starting EvE"
+    
     # input text file
     # input_textfile="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\eve_input.txt"
     input_textfile = (sys.argv[1])
