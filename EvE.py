@@ -160,7 +160,7 @@ class Merge_FEfile():
             if file1_filename is not None and file2_filename is not None:
                 self.list_of_files.append((file1_filename, file1_dye, file2_filename, file2_dye))
             else:
-                print "no match for " + file1_pattern + " and " + file1_pattern
+                print "no match for " + file1_pattern + " and " + file2_pattern
 
     def get_sys_argvs(self, file1_in, dye1_in, file2_in, dye2_in):
         '''capture file names and dyes from list'''
