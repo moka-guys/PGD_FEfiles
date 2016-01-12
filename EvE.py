@@ -395,36 +395,39 @@ class Merge_FEfile():
         ########################################################################
 
         # open the final output file
-        finaloutput = open(self.outputfolder + self.outputfilename, 'w')
-        tempoutputfile = open(self.outputfolder + self.tempoutputfilename, 'r')
-
-        # loop through the temp file and print it to a new file
-        for i, line in enumerate(tempoutputfile):
-            if i != 6:
-                finaloutput.write(line)
-            # except for line 7 which needs the DLSR updating
-            elif i == 6:
-                splitline = line.split('\t')
-                splitline[118] = str(DLRS_sqrt)
-                to_add = '\t'.join(splitline)
-                finaloutput.write(to_add)
-
-        # get n of rows in output file
-        self.output_len = i
-
-        ########################################################################
-        #  print "self.file1_len "+str(self.file1_len)
-        #  print "self.file2_len "+str(self.file2_len)
-        #  print "self.output_len "+str(self.output_len)
-        ########################################################################
-
-        # check the output file is the same length as the two input files.
-        assert self.file1_len == self.file2_len, "Two input files are not the same length"
-        assert self.file1_len == self.output_len, "Output file is not the same length as input files"
-
-        # close files
-        tempoutputfile.close()
-        finaloutput.close()
+        if os.path.isfile(self.outputfolder + self.outputfilename):
+            print str(self.outputfilename) + " has already been created"
+        else:
+            finaloutput = open(self.outputfolder + self.outputfilename, 'w')
+            tempoutputfile = open(self.outputfolder + self.tempoutputfilename, 'r')
+    
+            # loop through the temp file and print it to a new file
+            for i, line in enumerate(tempoutputfile):
+                if i != 6:
+                    finaloutput.write(line)
+                # except for line 7 which needs the DLSR updating
+                elif i == 6:
+                    splitline = line.split('\t')
+                    splitline[118] = str(DLRS_sqrt)
+                    to_add = '\t'.join(splitline)
+                    finaloutput.write(to_add)
+    
+            # get n of rows in output file
+            self.output_len = i
+    
+            ########################################################################
+            #  print "self.file1_len "+str(self.file1_len)
+            #  print "self.file2_len "+str(self.file2_len)
+            #  print "self.output_len "+str(self.output_len)
+            ########################################################################
+    
+            # check the output file is the same length as the two input files.
+            assert self.file1_len == self.file2_len, "Two input files are not the same length"
+            assert self.file1_len == self.output_len, "Output file is not the same length as input files"
+    
+            # close files
+            tempoutputfile.close()
+            finaloutput.close()
 
         # delete temporary file
         os.remove(self.outputfolder + self.tempoutputfilename)
