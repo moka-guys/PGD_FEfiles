@@ -9,7 +9,6 @@ import fnmatch
 
 
 class Merge_FEfile():
-
     '''
     Cmd line Usage: python EvE.py inputfile.txt output folder
     There is no need for a trailing / for the output folder
@@ -47,7 +46,9 @@ class Merge_FEfile():
     all_derivatives = []  # a list of all the calculated derivatives
     filtered_derivatives = []  # derivatives in the middle quartile
     files_to_find = []  # list of filename patterns to search for from text file
-    list_of_files = []  # list of complete filenames and dyes from text file
+    list_of_files = []  # list of complete filenames and dyes from text file 
+    report = [] # report
+    
 
     # variables to be populated in get_sys_argv and create_dicts
     file1 = ''
@@ -63,7 +64,9 @@ class Merge_FEfile():
     file1_len = ''
     file2_len = ''
     output_len = ''
-
+    
+    
+    
     def read_input_txt_file(self, inputfile, outputfolder):
         '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
         The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list'''
@@ -160,7 +163,7 @@ class Merge_FEfile():
             if file1_filename is not None and file2_filename is not None:
                 self.list_of_files.append((file1_filename, file1_dye, file2_filename, file2_dye))
             else:
-                print "no match for " + file1_pattern + " and " + file2_pattern
+                raise ValueError("no match for " + file1_pattern + " and " + file2_pattern)
 
     def get_sys_argvs(self, file1_in, dye1_in, file2_in, dye2_in):
         '''capture file names and dyes from list'''
@@ -396,8 +399,11 @@ class Merge_FEfile():
 
         # open the final output file
         if os.path.isfile(self.outputfolder + self.outputfilename):
-            print str(self.outputfilename) + " has already been created"
+            self.report.append(str(self.outputfilename) + " was not created as it already existed\n")
         else:
+            self.report.append(str(self.outputfilename) + " created succesfully\n")
+            
+            
             finaloutput = open(self.outputfolder + self.outputfilename, 'w')
             tempoutputfile = open(self.outputfolder + self.tempoutputfilename, 'r')
     
@@ -447,7 +453,7 @@ if __name__ == '__main__':
     # counter
     n = 1
     
-    print "starting EvE"
+    #print "starting EvE"
     
     # input text file
     # input_textfile="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\eve_input.txt"
@@ -491,6 +497,8 @@ if __name__ == '__main__':
             a.calculate_DLRS()
         else:
             print "error in input file for " + i
-
-        print "done file " + str(n) + " of " + str(len(a.list_of_files))
-        n = n + 1
+    for i in a.report:
+        print i
+    print "files created in: " + outputfolder
+    #print "done file " + str(n) + " of " + str(len(a.list_of_files))
+    n = n + 1
