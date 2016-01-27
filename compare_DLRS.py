@@ -1,3 +1,9 @@
+'''
+This script was used to compare the DLRS of 800 FE files which were recreated using EvE.
+The exact same pairing was used as the original hyb so the only difference is the DLRS.
+Therefore below the barcode and subarray is captured from the cy3 barcode to identify the original FE file as cy3 and cy5 are the same!
+In the future to compare a patient hyb'd against multiple control samples the selection of barcode and subarray will need changing.
+'''
 import os
 import fnmatch
 import numpy
@@ -20,6 +26,7 @@ for file in os.listdir(eve_output):
         else:
             pass
     #get substring for barcode and subarray_text (1_1)
+    # see docstring. the cy5 barcode may need to be captured from eve filename to find the original.
     barcode=file[0:12]
     subarray_text=file[15:18]
     
