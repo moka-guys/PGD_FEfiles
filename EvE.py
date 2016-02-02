@@ -22,13 +22,13 @@ class Merge_FEfile():
     There is no need for a trailing / for the output folder
 
     input file is a tab delimited file in format:
-    barcode 1    subarray    dye1    barcode 2    subarray    dye 2
+    barcode 1    subarray    dye1    barcode 2    subarray    dye 2 filename_prefix(optional)
 
     This script finds the two FE file which matches this input and creates a new FE file from these two samples using the dyes specified.
     The log ratio is re calculated
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction
 
-    The output file is names file1_file1dye_file2_file2dye.txt
+    The output file is named (prefix is optional) prefix_file1_file1dye_file2_file2dye.txt
     '''
 
     # where the FE files are REMEMBER TO END WITH \\
@@ -63,7 +63,7 @@ class Merge_FEfile():
     file2 = ''
     file1_dye = ''
     file2_dye = ''
-    out_file_prefix=None
+    out_file_prefix=None # set prefix to None by default
     outputfile = ''
     outputfilename = ''
     tempoutputfilename = ''
@@ -90,19 +90,28 @@ class Merge_FEfile():
 
             #print line
             splitline=line.split('\t')
+            #check if prefix is present (len ==7)
             if len(splitline)==7:
+              # check if any empty lines, or fields are present in inout file. do not check prefix
                 if splitline[0]=='' or splitline[1]=='' or splitline[2]=='' or splitline[3]=='' or splitline[4]=='' or splitline[5]=='':
                     raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
                     Please open in notepad and ensure there are no blank lines and all fields are present")
+                
                 file1_barcode=splitline[0]
                 file1_subarray=int(splitline[1])
                 file1_dye=splitline[2]
                 file2_barcode=splitline[3]
                 file2_subarray=int(splitline[4])
                 file2_dye=splitline[5]
-                out_file_prefix=splitline[6].rstrip()
-                out_file_prefix=out_file_prefix+"_"
                 
+                #capture prefix and remove newline
+                out_file_prefix=splitline[6].rstrip()
+                #check the prefix is not empty
+                assert len(out_file_prefix)!= 0,"Prefix column is empty, were you trying to add a prefix??!"
+                #and append an underscore to help later.
+                out_file_prefix=out_file_prefix+"_"
+            
+            # if no prefix:
             if len(splitline)==6:
                 if splitline[0]=='' or splitline[1]=='' or splitline[2]=='' or splitline[3]=='' or splitline[4]=='' or splitline[5]=='':
                     raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
@@ -195,7 +204,7 @@ class Merge_FEfile():
                 raise ValueError("no match for " + file1_pattern + " and " + file2_pattern)
 
     def get_sys_argvs(self, file1_in, dye1_in, file2_in, dye2_in,out_file_prefix):
-        '''capture file names and dyes from list'''
+        '''capture file names and dyes from list as global variables'''
         self.file1 = file1_in
         self.file2 = file2_in
         self.file1_dye = dye1_in
@@ -211,10 +220,12 @@ class Merge_FEfile():
         # remove string from filename
         pre_output1 = self.file1.replace("_S01_Guys121919_CGH_1100_Jul11", '')
         pre_output2 = self.file2.replace("_S01_Guys121919_CGH_1100_Jul11", '')
-
+        
+        # check if prefix is present
         if out_file_prefix is not None:
-            # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
+            # concatenate prefix, filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
             self.outputfilename = out_file_prefix+pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
+        #if no prefix:
         else:
             # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
             self.outputfilename = pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
@@ -506,7 +517,7 @@ if __name__ == '__main__':
     # loop through the list of files creating desired output.
     for i in a.list_of_files:
         if len(i) == 5:
-            # create variables of file1, dye, file2, dye
+            # create variables of file1, dye, file2, dye, prefix
             file_in_1 = i[0]
             file_in_2 = i[2]
             file_in_1_dye = i[1]
