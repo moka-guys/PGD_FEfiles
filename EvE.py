@@ -236,25 +236,25 @@ class Merge_FEfile():
         # open temp output file
         self.tempoutputfile = open(self.outputfolder + self.tempoutputfilename, 'w')
 
-        # open file1 and write the first 10 lines (stats, feparams) to the output file.
+        # open file1 and create a dict of the features.
         for i, line in enumerate(file1_open):
-            if i < 10:
-                self.tempoutputfile.write(line)
-            # then add all features to a dictionary, with the unique feature number as a key
             if i >= 10:
                 splitline = line.split('\t')
                 self.file1_dict[int(splitline[1])] = line
+                # get n of rows in file1
+                self.file1_len = i
 
-        # get n of rows in file1
-        self.file1_len = i
-
-        # repeat for features in second file
+        # repeat for features in second file but first writing the feparam and stats to temp file - when pairing with control this ensures the "header" comes from the test (file2) not control (file1), NB NEITHER ARE ACCURATE!!!!
+        
         for j, line in enumerate(file2_open):
+            if j < 10:
+                self.tempoutputfile.write(line)
+            # then add all features to a dictionary, with the unique feature number as a key
             if j >= 10:
                 splitline = line.split('\t')
                 self.file2_dict[int(splitline[1])] = line
-        # get n of rows in file2
-        self.file2_len = j
+                # get n of rows in file2
+                self.file2_len = j
 
         # close files
         file1_open.close()
