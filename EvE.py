@@ -85,92 +85,60 @@ class Merge_FEfile():
         # set output folder from sys argv and append \\
         self.outputfolder = outputfolder + "\\"
 
-        # open the input txt file
-        file2open = open(inputfile, 'r')
-        # for each line split into columns
-        for line in file2open:
+        with open(inputfile, 'r') as file2open:
+			# for each line split into columns
+			for line in file2open:
+				#split line on tab
+				splitline=line.split('\t')
+				
+				
+			  # check if any empty lines, or fields are present in input file. do not check prefix (last element in list)
+				if '' in splitline[0:7]:
+					raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
+					Please open in notepad and ensure there are no blank lines and all fields are present")
+					
+				# assign each value to a variable
+				# barcode, subarray (numeric), dye and scan number for file 1
+				file1_barcode=splitline[0]
+				file1_subarray=int(splitline[1])
+				file1_dye=splitline[2]
+				file1_scan_number=splitline[3]
+				
+				# barcode, subarray (numeric), dye and scan number for file 2
+				file2_barcode=splitline[4]
+				file2_subarray=int(splitline[5])
+				file2_dye=splitline[6]
+				file2_scan_number=splitline[7].rstrip()
+				
+									
+				# a prefix can be added to as the last column, which is added to the start of the output filename (len(splitline) == 9)
+				if len(splitline)==9:	
+					# capture prefix and remove newline
+					out_file_prefix=splitline[8].rstrip()
+					#check the prefix is not empty
+					assert len(out_file_prefix)!= 0,"Prefix column is empty, were you trying to add a prefix??!"
+					
+					#and append an underscore to help later.
+					out_file_prefix=out_file_prefix+"_"
+				# if no prefix specified
+				else:
+					out_file_prefix=None
+				
+				# check the given subarray values are valid. if they are not the text value will not be returned from the dictionary
+				assert file1_subarray in self.subarray_dict, "the given subarray for the Cy3 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
+				assert file2_subarray in self.subarray_dict, "the given subarray for the Cy5 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
+				
+				# convert the given subarray (an integer 1-8 - the keys in self.subarray_dict) into the string used in the file name (the values in self.subarray_dict)
+				file1_subarray=self.subarray_dict[file1_subarray]
+				file2_subarray=self.subarray_dict[file2_subarray]
+								
 
-            #print line
-            splitline=line.split('\t')
-            #check if prefix is present (len ==7)
-            if len(splitline)==7:
-              # check if any empty lines, or fields are present in inout file. do not check prefix
-                if splitline[0]=='' or splitline[1]=='' or splitline[2]=='' or splitline[3]=='' or splitline[4]=='' or splitline[5]=='':
-                    raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
-                    Please open in notepad and ensure there are no blank lines and all fields are present")
-                
-                file1_barcode=splitline[0]
-                file1_subarray=int(splitline[1])
-                file1_dye=splitline[2]
-                file2_barcode=splitline[3]
-                file2_subarray=int(splitline[4])
-                file2_dye=splitline[5]
-                
-                #capture prefix and remove newline
-                out_file_prefix=splitline[6].rstrip()
-                #check the prefix is not empty
-                assert len(out_file_prefix)!= 0,"Prefix column is empty, were you trying to add a prefix??!"
-                #and append an underscore to help later.
-                out_file_prefix=out_file_prefix+"_"
-            
-            # if no prefix:
-            if len(splitline)==6:
-                if splitline[0]=='' or splitline[1]=='' or splitline[2]=='' or splitline[3]=='' or splitline[4]=='' or splitline[5]=='':
-                    raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
-                    Please open in notepad and ensure there are no blank lines and all fields are present")
-                file1_barcode=splitline[0]
-                file1_subarray=int(splitline[1])
-                file1_dye=splitline[2]
-                file2_barcode=splitline[3]
-                file2_subarray=int(splitline[4])
-                file2_dye=splitline[5].rstrip()
-                out_file_prefix=None
-                
-            #convert subarray numbers to text for each file 
-            if file1_subarray == 1:
-                file1_subarray = "1_1.txt"
-            elif file1_subarray == 2:
-                file1_subarray = "1_2.txt"
-            elif file1_subarray == 3:
-                file1_subarray = "1_3.txt"
-            elif file1_subarray == 4:
-                file1_subarray = "1_4.txt"
-            elif file1_subarray == 5:
-                file1_subarray = "2_1.txt"
-            elif file1_subarray == 6:
-                file1_subarray = "2_2.txt"
-            elif file1_subarray == 7:
-                file1_subarray = "2_3.txt"
-            elif file1_subarray == 8:
-                file1_subarray = "2_4.txt"
-            else:
-                raise ValueError("error in file 1 subarray: " + str(file1_subarray))
+				# concatenate barcode, scan number and subarray text string to create a filename pattern to search for
+				filename1 = str(file1_barcode) + "_S0"+file1_scan_number+"*" + file1_subarray
+				filename2 = str(file2_barcode) + "_S0"+file2_scan_number+"*" +file2_subarray
 
-            if file2_subarray == 1:
-                file2_subarray = "1_1.txt"
-            elif file2_subarray == 2:
-                file2_subarray = "1_2.txt"
-            elif file2_subarray == 3:
-                file2_subarray = "1_3.txt"
-            elif file2_subarray == 4:
-                file2_subarray = "1_4.txt"
-            elif file2_subarray == 5:
-                file2_subarray = "2_1.txt"
-            elif file2_subarray == 6:
-                file2_subarray = "2_2.txt"
-            elif file2_subarray == 7:
-                file2_subarray = "2_3.txt"
-            elif file2_subarray == 8:
-                file2_subarray = "2_4.txt"
-            else:
-                raise ValueError("error in file 2 subarray: " + str(file2_subarray))
-
-            # concatenate barcode and new subarray value to a filename pattern to search for
-            filename1 = str(file1_barcode) + "_S01*" + file1_subarray
-            filename2 = str(file2_barcode) + "_S01*" + file2_subarray
-
-            # append to a list
-            self.files_to_find.append((filename1, file1_dye, filename2, file2_dye,out_file_prefix))
+				# append to a list
+				self.files_to_find.append((filename1, file1_dye, filename2, file2_dye,out_file_prefix))
 
     def find_FEfiles(self):
         '''this reads the list created above containing filename pattern and replaces this with the full file name'''
