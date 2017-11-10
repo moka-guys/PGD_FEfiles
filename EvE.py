@@ -17,7 +17,7 @@ import fnmatch
 
 
 class Merge_FEfile():
-    '''
+    """
     Cmd line Usage: python EvE.py inputfile.txt output folder
     There is no need for a trailing / for the output folder
 
@@ -29,124 +29,126 @@ class Merge_FEfile():
     NB The DLRS is recalculated but this calculation does not produce the same as what is produced during feature extraction
 
     The output file is named (prefix is optional) prefix_file1_file1dye_file2_file2dye.txt
-    '''
-	def __init__(self):
-		# where the FE files are REMEMBER TO END WITH \\
-		# chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
-		# chosenfolder="I:\\PGD_FE\\"#USB non unit test
-		self.chosenfolder = "S:\\Genetics_Data2\\Array\\FeatureExtraction\\"  # work network
+    """
+    def __init__(self):
+        # where the FE files are REMEMBER TO END WITH \\
+        # chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
+        # chosenfolder="I:\\PGD_FE\\"#USB non unit test
+        self.chosenfolder = "S:\\Genetics_Data2\\Array\\FeatureExtraction\\"  # work network
 
-		# when output folder is taken from command line argument:
-		self.outputfolder = ''
+        # when output folder is taken from command line argument:
+        self.outputfolder = ''
 
-		# if hard coded: REMEMBER TO END WITH \\
-		# self.outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
-		# self.outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB
+        # if hard coded: REMEMBER TO END WITH \\
+        # self.outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
+        # self.outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB
 
-		# create dictionaries for features
-		self.file1_dict = {}
-		self.file2_dict = {}
+        # create dictionaries for features
+        self.file1_dict = {}
+        self.file2_dict = {}
 
-		# some lists that are populated below
-		self.array1 = []  # holds chrom, start and log ratio from non control probes
-		self.sortedarray = []  # self.array1 but sorted on genomic location
-		self.log_dict = {}  # a dictionary with key = chrom, value = a list of log ratios for that chrom
-		self.all_derivatives = []  # a list of all the calculated derivatives
-		self.filtered_derivatives = []  # derivatives in the middle quartile
-		self.files_to_find = []  # list of filename patterns to search for from text file
-		self.list_of_files = []  # list of complete filenames and dyes from text file 
-		self.report = [] # report
+        # some lists that are populated below
+        self.array1 = []  # holds chrom, start and log ratio from non control probes
+        self.sortedarray = []  # self.array1 but sorted on genomic location
+        self.log_dict = {}  # a dictionary with key = chrom, value = a list of log ratios for that chrom
+        self.all_derivatives = []  # a list of all the calculated derivatives
+        self.filtered_derivatives = []  # derivatives in the middle quartile
+        self.files_to_find = []  # list of filename patterns to search for from text file
+        self.list_of_files = []  # list of complete filenames and dyes from text file 
+        self.report = [] # report
+        
 
+        # variables to be populated in get_sys_argv and create_dicts
+        self.file1 = ''
+        self.file2 = ''
+        self.file1_dye = ''
+        self.file2_dye = ''
+        self.out_file_prefix=None # set prefix to None by default
+        self.outputfile = ''
+        self.outputfilename = ''
+        self.tempoutputfilename = ''
+        self.tempoutputfile = ''
 
-		# variables to be populated in get_sys_argv and create_dicts
-		self.file1 = ''
-		self.file2 = ''
-		self.file1_dye = ''
-		self.file2_dye = ''
-		self.out_file_prefix=None # set prefix to None by default
-		self.outputfile = ''
-		self.outputfilename = ''
-		self.tempoutputfilename = ''
-		self.tempoutputfile = ''
-
-		# length of files
-		self.file1_len = ''
-		self.file2_len = ''
-		self.output_len = ''
-
-		# dictionary to translate between sub array numbers and file names
-		self.subarray_dict={1:'1_1.txt',2:'1_2.txt',3:'1_3.txt',4:'1_4.txt',5:'2_1.txt',6:'2_2.txt',7:'2_3.txt',8:'2_4.txt'}
-
+        # length of files
+        self.file1_len = ''
+        self.file2_len = ''
+        self.output_len = ''
+        
+        # dictionary to translate between sub array numbers and file names
+        self.subarray_dict={1:'1_1.txt',2:'1_2.txt',3:'1_3.txt',4:'1_4.txt',5:'2_1.txt',6:'2_2.txt',7:'2_3.txt',8:'2_4.txt'}
     
     def read_input_txt_file(self, inputfile, outputfolder):
-        '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
-        The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list'''
+        """
+		This function reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
+        The subarrays and barcode are converted into a pattern to search for the FEFile and these are put into a list
+		"""
 
         # set output folder from sys argv and append \\
         self.outputfolder = outputfolder + "\\"
 
         with open(inputfile, 'r') as file2open:
-			# for each line split into columns
-			for line in file2open:
-				#split line on tab
-				splitline=line.split('\t')
-				
-				
-			  # check if any empty lines, or fields are present in input file. do not check prefix (last element in list)
-				if '' in splitline[0:7]:
-					raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
-					Please open in notepad and ensure there are no blank lines and all fields are present")
-					
-				# assign each value to a variable
-				# barcode, subarray (numeric), dye and scan number for file 1
-				file1_barcode=splitline[0]
-				file1_subarray=int(splitline[1])
-				file1_dye=splitline[2]
-				file1_scan_number=splitline[3]
-				
-				# barcode, subarray (numeric), dye and scan number for file 2
-				file2_barcode=splitline[4]
-				file2_subarray=int(splitline[5])
-				file2_dye=splitline[6]
-				file2_scan_number=splitline[7].rstrip()
-				
-									
-				# a prefix can be added to as the last column, which is added to the start of the output filename (len(splitline) == 9)
-				if len(splitline)==9:	
-					# capture prefix and remove newline
-					out_file_prefix=splitline[8].rstrip()
-					#check the prefix is not empty
-					assert len(out_file_prefix)!= 0,"Prefix column is empty, were you trying to add a prefix??!"
-					
-					#and append an underscore to help later.
-					out_file_prefix=out_file_prefix+"_"
-				# if no prefix specified
-				else:
-					out_file_prefix=None
-				
-				# check the given subarray values are valid. if they are not the text value will not be returned from the dictionary
-				assert file1_subarray in self.subarray_dict, "the given subarray for the Cy3 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
-				assert file2_subarray in self.subarray_dict, "the given subarray for the Cy5 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
-				
-				# convert the given subarray (an integer 1-8 - the keys in self.subarray_dict) into the string used in the file name (the values in self.subarray_dict)
-				file1_subarray=self.subarray_dict[file1_subarray]
-				file2_subarray=self.subarray_dict[file2_subarray]
-								
+            # for each line split into columns
+            for line in file2open:
+                #split line on tab
+                splitline=line.split('\t')
+                
+                
+              # check if any empty lines, or fields are present in input file. do not check prefix (last element in list)
+                if '' in splitline[0:7]:
+                    raise ValueError("\nError in the input file! \nHave you used Excel?!?!?! \n\
+                    Please open in notepad and ensure there are no blank lines and all fields are present")
+                    
+                # assign each value to a variable
+                # barcode, subarray (numeric), dye and scan number for file 1
+                file1_barcode=splitline[0]
+                file1_subarray=int(splitline[1])
+                file1_dye=splitline[2]
+                file1_scan_number=splitline[3]
+                
+                # barcode, subarray (numeric), dye and scan number for file 2
+                file2_barcode=splitline[4]
+                file2_subarray=int(splitline[5])
+                file2_dye=splitline[6]
+                file2_scan_number=splitline[7].rstrip()
+                
+                                    
+                # a prefix can be added to as the last column, which is added to the start of the output filename (len(splitline) == 9)
+                if len(splitline)==9:    
+                    # capture prefix and remove newline
+                    out_file_prefix=splitline[8].rstrip()
+                    #check the prefix is not empty
+                    assert len(out_file_prefix)!= 0,"Prefix column is empty, were you trying to add a prefix??!"
+                    
+                    #and append an underscore to help later.
+                    out_file_prefix=out_file_prefix+"_"
+                # if no prefix specified
+                else:
+                    out_file_prefix=None
+                
+                # check the given subarray values are valid. if they are not the text value will not be returned from the dictionary
+                assert file1_subarray in self.subarray_dict, "the given subarray for the Cy3 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
+                assert file2_subarray in self.subarray_dict, "the given subarray for the Cy5 sample is invalid ("+str(file2_subarray)+")(must be a number 1-8)"
+                
+                # convert the given subarray (an integer 1-8 - the keys in self.subarray_dict) into the string used in the file name (the values in self.subarray_dict)
+                file1_subarray=self.subarray_dict[file1_subarray]
+                file2_subarray=self.subarray_dict[file2_subarray]
+                                
 
-				# concatenate barcode, scan number and subarray text string to create a filename pattern to search for
-				filename1 = str(file1_barcode) + "_S0"+file1_scan_number+"*" + file1_subarray
-				filename2 = str(file2_barcode) + "_S0"+file2_scan_number+"*" +file2_subarray
+                # concatenate barcode, scan number and subarray text string to create a filename pattern to search for
+                filename1 = str(file1_barcode) + "_S0"+file1_scan_number+"*" + file1_subarray
+                filename2 = str(file2_barcode) + "_S0"+file2_scan_number+"*" +file2_subarray
 
-				# append to a list
-				self.files_to_find.append((filename1, file1_dye, filename2, file2_dye,out_file_prefix))
+                # append to a list
+                self.files_to_find.append((filename1, file1_dye, filename2, file2_dye,out_file_prefix))
 
     def find_FEfiles(self):
-        '''this reads the list created above containing filename pattern and replaces this with the full file name'''
-        # for each row of the text file split into fields
+        """this reads the list created above containing filename pattern and replaces this with the full file name"""
+        
+		# take each item in the list of files to eve.
         for i in self.files_to_find:
-            file1_pattern = i[0]
+            filename1 = i[0] 
             file1_dye = i[1]
-            file2_pattern = i[2]
+            filename2 = i[2]
             file2_dye = i[3]
             out_file_prefix=i[4]
 
@@ -157,22 +159,22 @@ class Merge_FEfile():
             # search for a FE file which matches the filename pattern
             for afile in os.listdir(self.chosenfolder):
                 # file 1
-                if fnmatch.fnmatch(afile, file1_pattern):
+                if fnmatch.fnmatch(afile, filename1):
                     file1_filename = afile
-
+                
                 # file 2
-                if fnmatch.fnmatch(afile, file2_pattern):
+                if fnmatch.fnmatch(afile, filename2):
                     file2_filename = afile
-
-
-            # if both files have been identified add this to a new list else report.
-            if file1_filename is not None and file2_filename is not None:
+                
+            # if both files have been identified add this to a new list
+            if file1_filename and file2_filename:
                 self.list_of_files.append((file1_filename, file1_dye, file2_filename, file2_dye,out_file_prefix))
+			# if either file could not be identified report this.
             else:
-                raise ValueError("no match for " + file1_pattern + " and " + file2_pattern)
+                raise ValueError("no match for " + filename1 + " and " + filename2)
 
     def get_sys_argvs(self, file1_in, dye1_in, file2_in, dye2_in,out_file_prefix):
-        '''capture file names and dyes from list as global variables'''
+        """capture file names and dyes from list as global variables"""
         self.file1 = file1_in
         self.file2 = file2_in
         self.file1_dye = dye1_in
@@ -180,20 +182,18 @@ class Merge_FEfile():
         self.out_file_prefix = out_file_prefix
 
     def create_dicts(self):
-        '''open files, create the temporary file and add features to dictionaries '''
-        # open files
-        file1_open = open(self.chosenfolder + self.file1, 'r')
-        file2_open = open(self.chosenfolder + self.file2, 'r')
-
-        # remove string from filename
+        """open files, create the temporary file and add features to dictionaries """
+    
+        # remove this string from filename to make output file names more manageable
         pre_output1 = self.file1.replace("_Guys121919_CGH_1100_Jul11", '')
         pre_output2 = self.file2.replace("_Guys121919_CGH_1100_Jul11", '')
         
-        # check if prefix is present
-        if out_file_prefix is not None:
+        # Build the output file name.
+        # if prefix is present add it
+        if self.out_file_prefix is not None:
             # concatenate prefix, filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
             self.outputfilename = self.out_file_prefix+pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
-        #if no prefix:
+        # if no prefix don't add it!
         else:
             # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
             self.outputfilename = pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
@@ -204,25 +204,29 @@ class Merge_FEfile():
         # open temp output file
         self.tempoutputfile = open(self.outputfolder + self.tempoutputfilename, 'w')
 
+        
+        # open FE files
+        file1_open = open(self.chosenfolder + self.file1, 'r')
+        file2_open = open(self.chosenfolder + self.file2, 'r')
+
         # open file1 and create a dict of the features.
-        for i, line in enumerate(file1_open):
-            if i >= 10:
+        for linenumber, line in enumerate(file1_open):
+            if linenumber >= 10:
                 splitline = line.split('\t')
                 self.file1_dict[int(splitline[1])] = line
-                # get n of rows in file1
-                self.file1_len = i
+                # get n of rows in file1 (take the linenumber of the last line)
+                self.file1_len = linenumber
 
         # repeat for features in second file but first writing the feparam and stats to temp file - when pairing with control this ensures the "header" comes from the test (file2) not control (file1), NB NEITHER ARE ACCURATE!!!!
-        
-        for j, line in enumerate(file2_open):
-            if j < 10:
+        for linenumber, line in enumerate(file2_open):
+            if linenumber < 10:
                 self.tempoutputfile.write(line)
             # then add all features to a dictionary, with the unique feature number as a key
-            if j >= 10:
+            if linenumber >= 10:
                 splitline = line.split('\t')
                 self.file2_dict[int(splitline[1])] = line
                 # get n of rows in file2
-                self.file2_len = j
+                self.file2_len = linenumber
 
         # close files
         file1_open.close()
