@@ -30,7 +30,7 @@ class Merge_FEfile():
 
     The output file is named (prefix is optional) prefix_file1_file1dye_file2_file2dye.txt
     '''
-  	def __init__(self):
+	def __init__(self):
 		# where the FE files are REMEMBER TO END WITH \\
 		# chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
 		# chosenfolder="I:\\PGD_FE\\"#USB non unit test
@@ -56,7 +56,7 @@ class Merge_FEfile():
 		self.files_to_find = []  # list of filename patterns to search for from text file
 		self.list_of_files = []  # list of complete filenames and dyes from text file 
 		self.report = [] # report
-		
+
 
 		# variables to be populated in get_sys_argv and create_dicts
 		self.file1 = ''
@@ -73,10 +73,10 @@ class Merge_FEfile():
 		self.file1_len = ''
 		self.file2_len = ''
 		self.output_len = ''
-		
+
 		# dictionary to translate between sub array numbers and file names
 		self.subarray_dict={1:'1_1.txt',2:'1_2.txt',3:'1_3.txt',4:'1_4.txt',5:'2_1.txt',6:'2_2.txt',7:'2_3.txt',8:'2_4.txt'}
-    
+
     
     def read_input_txt_file(self, inputfile, outputfolder):
         '''this module reads a input txt file (tab delimited with barcode 1, subarray, dye 1, barcode 2, subarray, dye2)
