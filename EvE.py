@@ -159,13 +159,11 @@ class Merge_FEfile():
                 # file 1
                 if fnmatch.fnmatch(afile, file1_pattern):
                     file1_filename = afile
-                else:
-                    pass
+
                 # file 2
                 if fnmatch.fnmatch(afile, file2_pattern):
                     file2_filename = afile
-                else:
-                    pass
+
 
             # if both files have been identified add this to a new list else report.
             if file1_filename is not None and file2_filename is not None:
