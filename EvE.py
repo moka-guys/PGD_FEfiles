@@ -186,13 +186,13 @@ class Merge_FEfile():
         file2_open = open(self.chosenfolder + self.file2, 'r')
 
         # remove string from filename
-        pre_output1 = self.file1.replace("_S01_Guys121919_CGH_1100_Jul11", '')
-        pre_output2 = self.file2.replace("_S01_Guys121919_CGH_1100_Jul11", '')
+        pre_output1 = self.file1.replace("_Guys121919_CGH_1100_Jul11", '')
+        pre_output2 = self.file2.replace("_Guys121919_CGH_1100_Jul11", '')
         
         # check if prefix is present
         if out_file_prefix is not None:
             # concatenate prefix, filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
-            self.outputfilename = out_file_prefix+pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
+            self.outputfilename = self.out_file_prefix+pre_output1.replace(".txt", '') + "_" + self.file1_dye + "_" + pre_output2.replace(".txt", '') + "_" + self.file2_dye + ".txt"
         #if no prefix:
         else:
             # concatenate filenames and dyes into output filename file1_file1_dye_file2_file2_dye.txt
