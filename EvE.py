@@ -30,50 +30,52 @@ class Merge_FEfile():
 
     The output file is named (prefix is optional) prefix_file1_file1dye_file2_file2dye.txt
     '''
+  	def __init__(self):
+		# where the FE files are REMEMBER TO END WITH \\
+		# chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
+		# chosenfolder="I:\\PGD_FE\\"#USB non unit test
+		self.chosenfolder = "S:\\Genetics_Data2\\Array\\FeatureExtraction\\"  # work network
 
-    # where the FE files are REMEMBER TO END WITH \\
-    # chosenfolder="I:\\PGD_FE\\Col_Testing\\"# column_test_USB
-    # chosenfolder="I:\\PGD_FE\\"#USB non unit test
-    chosenfolder = "S:\\Genetics_Data2\\Array\\FeatureExtraction\\"  # work network
+		# when output folder is taken from command line argument:
+		self.outputfolder = ''
 
-    # when output folder is taken from command line argument:
-    outputfolder = ''
+		# if hard coded: REMEMBER TO END WITH \\
+		# self.outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
+		# self.outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB
 
-    # if hard coded: REMEMBER TO END WITH \\
-    # outputfolder="S:\\Genetics_Data2\\Array\\Audits and Projects\\150702 PGD FEfiles\\round 2\\output\\"#work network
-    # outputfolder="F:\\PGD_FE\\Col_Testing\\output\\" #column_test_USB
+		# create dictionaries for features
+		self.file1_dict = {}
+		self.file2_dict = {}
 
-    # create dictionaries for features
-    file1_dict = {}
-    file2_dict = {}
+		# some lists that are populated below
+		self.array1 = []  # holds chrom, start and log ratio from non control probes
+		self.sortedarray = []  # self.array1 but sorted on genomic location
+		self.log_dict = {}  # a dictionary with key = chrom, value = a list of log ratios for that chrom
+		self.all_derivatives = []  # a list of all the calculated derivatives
+		self.filtered_derivatives = []  # derivatives in the middle quartile
+		self.files_to_find = []  # list of filename patterns to search for from text file
+		self.list_of_files = []  # list of complete filenames and dyes from text file 
+		self.report = [] # report
+		
 
-    # some lists that are populated below
-    array1 = []  # holds chrom, start and log ratio from non control probes
-    sortedarray = []  # array1 but sorted on genomic location
-    log_dict = {}  # a dictionary with key = chrom, value = a list of log ratios for that chrom
-    all_derivatives = []  # a list of all the calculated derivatives
-    filtered_derivatives = []  # derivatives in the middle quartile
-    files_to_find = []  # list of filename patterns to search for from text file
-    list_of_files = []  # list of complete filenames and dyes from text file 
-    report = [] # report
-    
+		# variables to be populated in get_sys_argv and create_dicts
+		self.file1 = ''
+		self.file2 = ''
+		self.file1_dye = ''
+		self.file2_dye = ''
+		self.out_file_prefix=None # set prefix to None by default
+		self.outputfile = ''
+		self.outputfilename = ''
+		self.tempoutputfilename = ''
+		self.tempoutputfile = ''
 
-    # variables to be populated in get_sys_argv and create_dicts
-    file1 = ''
-    file2 = ''
-    file1_dye = ''
-    file2_dye = ''
-    out_file_prefix=None # set prefix to None by default
-    outputfile = ''
-    outputfilename = ''
-    tempoutputfilename = ''
-    tempoutputfile = ''
-
-    # length of files
-    file1_len = ''
-    file2_len = ''
-    output_len = ''
-    
+		# length of files
+		self.file1_len = ''
+		self.file2_len = ''
+		self.output_len = ''
+		
+		# dictionary to translate between sub array numbers and file names
+		self.subarray_dict={1:'1_1.txt',2:'1_2.txt',3:'1_3.txt',4:'1_4.txt',5:'2_1.txt',6:'2_2.txt',7:'2_3.txt',8:'2_4.txt'}
     
     
     def read_input_txt_file(self, inputfile, outputfolder):
